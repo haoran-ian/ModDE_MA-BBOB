@@ -29,9 +29,9 @@ if __name__ == "__main__":
     ndim = 20
     nprob = 50
     np.random.seed(0)
-    seeds = [np.random.randint(1e8) for _ in range(nprob)]
+    seeds = [np.random.randint(1e8) for _ in range(ndim * nprob)]
 
-    xopts = np.array([generate_xopt(i+1, j, seeds[i])
+    xopts = np.array([generate_xopt(i+1, j, seeds[j * 20 + i])
                       for i in range(ndim) for j in range(nprob)])
     np.savetxt("data/xopts.txt", np.array(xopts))
 
