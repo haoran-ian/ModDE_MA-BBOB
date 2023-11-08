@@ -7,6 +7,7 @@ def generate_array(seed):
     num_random = np.random.randint(2, 5)
     weight = [np.random.uniform() if i < num_random else 0 for i in range(24)]
     np.random.shuffle(weight)
+    weight /= np.sum(weight)
     return weight
 
 
@@ -20,3 +21,6 @@ iids = np.random.randint(100, size=(50, 24))
 
 np.savetxt("data/weights.txt", weights)
 np.savetxt("data/iids.txt", iids)
+
+for weight in weights:
+    print(np.sum(weight))
