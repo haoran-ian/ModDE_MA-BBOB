@@ -5,7 +5,7 @@ from tqdm import trange
 
 
 def landscape(problem):
-    x = np.arange(-5, 5.1, 0.025)
+    x = np.arange(-5, 5.1, 0.05)
     x1, x2 = np.meshgrid(x, x)
     solutions = np.column_stack((x1.ravel(), x2.ravel()))
     results = np.array(problem(solutions)).reshape((x.shape[0], x.shape[0]))
