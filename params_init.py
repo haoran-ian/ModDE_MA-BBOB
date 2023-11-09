@@ -14,9 +14,9 @@ def generate_weight(seed):
 
 def generate_xopt(dim, ndim, seed):
     np.random.seed(seed)
-    xopt_a = np.random.uniform(0.01, 0.99, size=ndim-dim)
+    xopt_a = np.random.uniform(-4.99, 4.99, size=ndim-dim)
     xopt_b = np.random.uniform(-0.01, 0.01, size=dim)
-    xopt_b = np.array([x_b if x_b >= 0 else x_b+1 for x_b in xopt_b])
+    xopt_b = np.array([x_b-5. if x_b >= 0 else x_b+5. for x_b in xopt_b])
     xopt = np.concatenate((xopt_a, xopt_b))
     np.random.shuffle(xopt)
     return xopt
