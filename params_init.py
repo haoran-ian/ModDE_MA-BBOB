@@ -14,7 +14,7 @@ def generate_weight(seed):
 
 def generate_xopt(dim, id, seed):
     np.random.seed(seed)
-    xopt_a = np.random.uniform(size=20-dim)
+    xopt_a = np.random.uniform(0.01, 0.99, size=20-dim)
     xopt_b = np.random.uniform(0. if id < 25 else 0.99,
                                0.01 if id < 25 else 1., size=dim)
     xopt = np.concatenate((xopt_a, xopt_b))
