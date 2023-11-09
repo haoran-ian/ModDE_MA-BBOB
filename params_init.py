@@ -12,11 +12,11 @@ def generate_weight(seed):
     return weight
 
 
-def generate_xopt(dim, id, seed):
+def generate_xopt(dim, seed):
     np.random.seed(seed)
     xopt_a = np.random.uniform(0.01, 0.99, size=20-dim)
-    xopt_b = np.random.uniform(0. if id < 25 else 0.99,
-                               0.01 if id < 25 else 1., size=dim)
+    xopt_b = np.random.uniform(-0.01, 0.01, size=dim)
+    xopt_b = np.array([x_b if x_b >= 0 else x_b+1 for x_b in xopt_b])
     xopt = np.concatenate((xopt_a, xopt_b))
     np.random.shuffle(xopt)
     return xopt
@@ -31,7 +31,7 @@ if __name__ == "__main__":
     np.random.seed(0)
     seeds = [np.random.randint(1e8) for _ in range(ndim * nprob)]
 
-    xopts = np.array([generate_xopt(i+1, j, seeds[j * 20 + i])
+    xopts = np.array([generate_xopt(i+1, seeds[j * 20 + i])
                       for i in range(ndim) for j in range(nprob)])
     np.savetxt("data/xopts.txt", np.array(xopts))
 
