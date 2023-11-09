@@ -33,7 +33,7 @@ if __name__ == "__main__":
 
     xopts = np.array([generate_xopt(i+1, ndim, seeds[j * ndim + i])
                       for i in range(ndim) for j in range(nprob)])
-    np.savetxt("data/xopts.txt", np.array(xopts))
+    np.savetxt("data/xopts_{}.txt".format(ndim), np.array(xopts))
 
     weights = np.array([generate_weight(seeds[i]) for i in range(nprob)])
     np.savetxt("data/weights.txt", weights)
