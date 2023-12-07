@@ -6,6 +6,7 @@ from modde import ModularDE
 
 class LSHADE_interface():
     def __init__(self, bound_corr, r_N_init, r_arc, p, H, budget):
+        #It would be useful for maintainability if you add a short desciption of the variables, or give them more informative names (e.g. memory_size instead of H)
         self.bound_corr = bound_corr
         self.r_N_init = r_N_init
         self.r_arc = r_arc
@@ -28,7 +29,7 @@ class LSHADE_interface():
                                 init_stats=True, adaptation_method_F='shade',
                                 adaptation_method_CR='shade',
                                 pbest_value=self.p)
-        self.lshade.run()
+        self.lshade.run() #I'm not sure if this will work properly with the property-logging, you might want to check this, otherwise use the ask-tell version
 
     @property
     def F(self):
@@ -84,6 +85,8 @@ if __name__ == "__main__":
     args = vars(parser.parse_args())
     number_of_dims_near_boundaries = int(args['near_bounds'])
     index_of_params_generating_problem = int(args['index_params'])
+
+    #It would be more readable if you make the things below into a separate function
     boundary_correction = None if args['bound_corr'] == 'None' else args['bound_corr']
     # load xopt, weights, and iids for ioh.problem.ManyAffine
     xopts = np.loadtxt("data/xopts_20.txt")
@@ -114,24 +117,35 @@ if __name__ == "__main__":
     # )
     # experiment
     obj = LSHADE_interface('saturate', r_N_init, r_arc, p, H, budget)
-    exp = ioh.Experiment(algorithm=obj,
-                         fids=[1], iids=[1], dims=[20], reps=runs,
-                         problem_class=ioh.ProblemClass.REAL,
-                         njobs=12,
-                         logged=True,
-                         logger_triggers=[
-                             ioh.logger.trigger.ALWAYS,
-                             ioh.logger.trigger.ON_VIOLATION],
-                         output_directory="./",
-                         folder_name=f'L-SHADE_sat',
-                         algorithm_name=f'L-SHADE',
-                         store_positions=True,
-                         experiment_attributes={'SDIS': 'Saturate'},
-                         logged_attributes=[
-                             'corrected', 'cumulative_corrected',
-                             'F', 'CR', 'CS', 'ED'],
-                         merge_output=True, zip_output=True, remove_data=True)
-    exp.add_custom_problem(
-        problem, "MA-BBOB_{}_{}".format(number_of_dims_near_boundaries,
-                                        index_of_params_generating_problem))
-    exp()
+
+
+    logger = ioh.logger.Analyzer()
+    logger.watch(obj, [])
+
+    problem.set_id() #makes it easier to keep track of which function is which, can also use set_instance
+    problem.attach_logger(logger)
+    for _ in runs:
+        obj(problem)
+        problem.reset()
+    
+    # exp = ioh.Experiment(algorithm=obj,
+    #                      fids=[1], iids=[1], dims=[20], reps=runs,
+    #                      problem_class=ioh.ProblemClass.REAL,
+    #                      njobs=12,
+    #                      logged=True,
+    #                      logger_triggers=[
+    #                          ioh.logger.trigger.ALWAYS,
+    #                          ioh.logger.trigger.ON_VIOLATION],
+    #                      output_directory="./",
+    #                      folder_name=f'L-SHADE_sat',
+    #                      algorithm_name=f'L-SHADE',
+    #                      store_positions=True,
+    #                      experiment_attributes={'SDIS': 'Saturate'},
+    #                      logged_attributes=[
+    #                          'corrected', 'cumulative_corrected',
+    #                          'F', 'CR', 'CS', 'ED'],
+    #                      merge_output=True, zip_output=True, remove_data=True)
+    # exp.add_custom_problem(
+    #     problem, "MA-BBOB_{}_{}".format(number_of_dims_near_boundaries,
+    #                                     index_of_params_generating_problem)) #Tip: use f-strings instead of '.format', that helps a lot for readability
+    # exp()
