@@ -6,7 +6,7 @@ from modde import ModularDE
 
 class LSHADE_interface():
     def __init__(self, bound_corr, r_N_init, r_arc, p, H, budget):
-        #It would be useful for maintainability if you add a short desciption of the variables, or give them more informative names (e.g. memory_size instead of H)
+        # It would be useful for maintainability if you add a short desciption of the variables, or give them more informative names (e.g. memory_size instead of H)
         self.bound_corr = bound_corr
         self.r_N_init = r_N_init
         self.r_arc = r_arc
@@ -29,7 +29,7 @@ class LSHADE_interface():
                                 init_stats=True, adaptation_method_F='shade',
                                 adaptation_method_CR='shade',
                                 pbest_value=self.p)
-        self.lshade.run() #I'm not sure if this will work properly with the property-logging, you might want to check this, otherwise use the ask-tell version
+        self.lshade.run()  # I'm not sure if this will work properly with the property-logging, you might want to check this, otherwise use the ask-tell version
 
     @property
     def F(self):
@@ -86,7 +86,7 @@ if __name__ == "__main__":
     number_of_dims_near_boundaries = int(args['near_bounds'])
     index_of_params_generating_problem = int(args['index_params'])
 
-    #It would be more readable if you make the things below into a separate function
+    # It would be more readable if you make the things below into a separate function
     boundary_correction = None if args['bound_corr'] == 'None' else args['bound_corr']
     # load xopt, weights, and iids for ioh.problem.ManyAffine
     xopts = np.loadtxt("data/xopts_20.txt")
@@ -118,16 +118,35 @@ if __name__ == "__main__":
     # experiment
     obj = LSHADE_interface('saturate', r_N_init, r_arc, p, H, budget)
 
+    info = "index_of_params_generating_problem: {}, xopt_index: {}".format(
+        index_of_params_generating_problem, xopt_index)
+    print(info)
+    logger_params = dict(
+        triggers=[ioh.logger.trigger.ALWAYS, ioh.logger.trigger.ON_VIOLATION],
+        additional_properties=[],
+        root="./",
+        folder_name='L-SHADE_sat_{}_{}'.format(
+            index_of_params_generating_problem, xopt_index),
+        algorithm_name=f'L-SHADE',
+        algorithm_info=info,
+        store_positions=True,
+    )
+    logger = ioh.logger.Analyzer(**logger_params)
+    logger.set_experiment_attributes({'SDIS': 'Saturate'})
+    logger.watch(obj,
+                 ['corrected', 'cumulative_corrected', 'F', 'CR', 'CS', 'ED'])
+    logger.reset()
 
-    logger = ioh.logger.Analyzer()
-    logger.watch(obj, [])
-
-    problem.set_id() #makes it easier to keep track of which function is which, can also use set_instance
+    # makes it easier to keep track of which function is which, can also use set_instance
+    problem_id = int(str(index_of_params_generating_problem).rjust(3, '0') +
+                     str(xopt_index).rjust(3, '0')) + 1000000
+    print("Problem ID: {}".format(problem_id))
+    problem.set_id(problem_id)
     problem.attach_logger(logger)
-    for _ in runs:
+    for _ in range(runs):
         obj(problem)
         problem.reset()
-    
+
     # exp = ioh.Experiment(algorithm=obj,
     #                      fids=[1], iids=[1], dims=[20], reps=runs,
     #                      problem_class=ioh.ProblemClass.REAL,
