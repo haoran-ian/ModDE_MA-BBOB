@@ -2,3 +2,6 @@ ModDE/
 *.zip
 .vscode/
 check.ipynb
+logger/
+logger-zip/
+nohup.out
