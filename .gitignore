@@ -6,3 +6,4 @@ logger/
 logger-zip/
 nohup.out
 atom_runs/
+data/csv/
