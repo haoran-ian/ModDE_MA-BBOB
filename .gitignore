@@ -9,3 +9,4 @@ atom_runs/
 data/csv/
 test.py
 *.db
+*.npy
