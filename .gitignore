@@ -6,7 +6,7 @@ logger/
 logger-zip/
 nohup.out
 atom_runs/
-data/csv/
+data_*/
 test.py
 *.db
 *.npy
