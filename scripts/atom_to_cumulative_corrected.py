@@ -1,14 +1,21 @@
+import os
+import sqlite3
+import numpy as np
 import pandas as pd
 
-corrected = pd.read_csv("data/csv/correctd.csv")
-corrected = corrected.values
-cumulative_corrected = [[0 for _ in range(50)]
-                        for _ in range(100002) for _ in range(21)]
-for i in range(21):
-    for j in range(100002):
-        for k in range(50):
-            if j > 0:
-                cumulative_corrected[i][j][k] = corrected[i][j][k] + \
-                    cumulative_corrected[i][j-1][k]
-            else:
-                cumulative_corrected[i][j][k] = corrected[i][j][k]
+if __name__ == "__main__":
+    if not os.path.exists("results/cumulative_corrected/"):
+        os.mkdir("results/cumulative_corrected/")
+    table_name = "cumulative_corrected"
+    conn = sqlite3.connect("data/atom_data.db")
+    cursor = conn.cursor()
+    cursor.execute(f"select name from sqlite_master where type='table' and \
+        name='{table_name}'")
+    if cursor.fetchone():
+        cursor.execute(f"drop table {table_name}")
+    corrected = np.load("data/corrected.npy")
+    cumulative_corrected = np.zeros(corrected.shape)
+    for j in range(1, 100002):
+        cumulative_corrected[:, j, :] = \
+            cumulative_corrected[:, j-1, :] + corrected[:, j, :]
+    np.save(f"data/{table_name}.npy", cumulative_corrected)
