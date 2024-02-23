@@ -110,11 +110,6 @@ if __name__ == "__main__":
         weights[index_of_params_generating_problem],
         iids[index_of_params_generating_problem],
         ndim)
-    # problem.enforce_bounds(
-    #     how=ioh.ConstraintEnforcement.SOFT,
-    #     weight=1.0,
-    #     exponent=1.0
-    # )
     # experiment
     obj = LSHADE_interface('saturate', r_N_init, r_arc, p, H, budget)
 
@@ -146,25 +141,3 @@ if __name__ == "__main__":
     for _ in range(runs):
         obj(problem)
         problem.reset()
-
-    # exp = ioh.Experiment(algorithm=obj,
-    #                      fids=[1], iids=[1], dims=[20], reps=runs,
-    #                      problem_class=ioh.ProblemClass.REAL,
-    #                      njobs=12,
-    #                      logged=True,
-    #                      logger_triggers=[
-    #                          ioh.logger.trigger.ALWAYS,
-    #                          ioh.logger.trigger.ON_VIOLATION],
-    #                      output_directory="./",
-    #                      folder_name=f'L-SHADE_sat',
-    #                      algorithm_name=f'L-SHADE',
-    #                      store_positions=True,
-    #                      experiment_attributes={'SDIS': 'Saturate'},
-    #                      logged_attributes=[
-    #                          'corrected', 'cumulative_corrected',
-    #                          'F', 'CR', 'CS', 'ED'],
-    #                      merge_output=True, zip_output=True, remove_data=True)
-    # exp.add_custom_problem(
-    #     problem, "MA-BBOB_{}_{}".format(number_of_dims_near_boundaries,
-    #                                     index_of_params_generating_problem)) #Tip: use f-strings instead of '.format', that helps a lot for readability
-    # exp()
