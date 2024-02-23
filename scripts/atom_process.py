@@ -9,8 +9,9 @@ def dataframe_to_csv(table_value, index_of_params_generating_problem,
               "x10", "x11", "x12", "x13", "x14", "x15", "x16", "x17", "x18",
               "x19"]
     df = pd.DataFrame(table_value, columns=header)
-    df.to_csv("data/atom_runs/{}_{}_runs_{}.csv".format(
-        index_of_params_generating_problem, xopt_index, runs), index=False)
+    file_name = f"data/atom_runs/{index_of_params_generating_problem}_{xopt_index}_runs_{runs}.csv"
+    print(file_name)
+    df.to_csv(file_name, index=False)
 
 
 def split_dat(index_of_params_generating_problem, xopt_index):
