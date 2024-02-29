@@ -50,16 +50,18 @@ def plot(x_hash, variable):
         plt.xscale('log')
         plt.xlabel("Function Evaluations")
         if variable == "raw_y":
+            plt.ylim(10**-6, 10**2.7)
             plt.yscale('log')
-            plt.ylabel("Best-so-far-f(x)-value")
+            plt.ylabel("Best-so-far f(x) value")
             plt.legend(loc="lower left")
             if i > 1:
                 plt.title(
-                    f"Expected target value when proximate boundaries are {i}")
+                    f"Best-so-far f(x) value where optima \nare close to the bound in {i} dimensions")
             else:
                 plt.title(
-                    f"Expected target value when proximate boundary is {i}")
+                    f"Best-so-far f(x) value where optima \nare close to the bound in {i} dimension")
         elif variable == "corrected":
+            plt.ylim(-0.04, 1.04)
             plt.gca().yaxis.set_major_formatter(mtick.PercentFormatter(xmax=1))
             plt.ylabel("Probability of Generating Infeasible Solution")
             plt.axvline(x=peak_x, color="grey", linestyle='--')
@@ -69,13 +71,12 @@ def plot(x_hash, variable):
             plt.legend(loc="upper left")
             if i > 1:
                 plt.title(
-                    f"Probability of generating infeasible solution \n\
-                        when proximate boundaries are {i}")
+                    f"Probability of generating infeasible solution where optima \nare close to the bound in {i} dimensions")
             else:
                 plt.title(
-                    f"Probability of generating infeasible solution \n\
-                        when proximate boundary is {i}")
+                    f"Probability of generating infeasible solution where optima \nare close to the bound in {i} dimension")
         elif variable == "cumulative_corrected":
+            plt.ylim(-0.04, 0.35)
             plt.gca().yaxis.set_major_formatter(mtick.PercentFormatter(xmax=1))
             plt.ylabel("Proportion of Infeasible Solutions")
             plt.axvline(x=peak_x, color="grey", linestyle='--')
@@ -85,44 +86,46 @@ def plot(x_hash, variable):
             plt.legend(loc="upper left")
             if i > 1:
                 plt.title(
-                    f"Proportion of infeasible solutions \n\
-                        when proximate boundaries are {i}")
+                    f"Proportion of infeasible solutions where optima \nare close to the bound in {i} dimensions")
             else:
                 plt.title(
-                    f"Proportion of infeasible solutions \n\
-                        when proximate boundary is {i}")
+                    f"Proportion of infeasible solutions where optima \nare close to the bound in {i} dimension")
         elif variable == "F":
+            plt.ylim(-0.04, 0.77)
             plt.legend(loc="upper left")
             if i > 1:
                 plt.title(
-                    f"Change of F when proximate boundaries are {i}")
+                    f"Change of F where optima are close to the bound in {i} dimensions")
             else:
                 plt.title(
-                    f"Change of F when proximate boundary is {i}")
+                    f"Change of F where optima are close to the bound in {i} dimension")
         elif variable == "CR":
+            plt.ylim(-0.04, 1.0)
             plt.legend(loc="upper left")
             if i > 1:
                 plt.title(
-                    f"Change of CR when proximate boundaries are {i}")
+                    f"Change of CR where optima are close to the bound in {i} dimensions")
             else:
                 plt.title(
-                    f"Change of CR when proximate boundary is {i}")
+                    f"Change of CR where optima are close to the bound in {i} dimension")
         elif variable == "CS":
+            plt.ylim(-0.04, 0.9)
             plt.legend(loc="upper left")
             if i > 1:
                 plt.title(
-                    f"Change of CS when proximate boundaries are {i}")
+                    f"Change of CS where optima are close to the bound in {i} dimensions")
             else:
                 plt.title(
-                    f"Change of CS when proximate boundary is {i}")
+                    f"Change of CS where optima are close to the bound in {i} dimension")
         elif variable == "ED":
+            plt.ylim(-0.04, 1.8)
             plt.legend(loc="upper left")
             if i > 1:
                 plt.title(
-                    f"Change of ED when proximate boundaries are {i}")
+                    f"Change of ED where optima are close to the bound in {i} dimensions")
             else:
                 plt.title(
-                    f"Change of ED when proximate boundary is {i}")
+                    f"Change of ED where optima are close to the bound in {i} dimension")
         plt.savefig(f"results/{variable}/{i}.png")
         plt.cla()
 
@@ -133,10 +136,10 @@ if __name__ == "__main__":
     x = list(set(int(10**(i/unit)) for i in range(5*unit+1)))
     x.sort()
     x_hash = hash_bin(x)
-    # plot(x_hash, "raw_y")
-    # plot(x_hash, "corrected")
-    # plot(x_hash, "cumulative_corrected")
-    # plot(x_hash, "F")
-    # plot(x_hash, "CR")
+    plot(x_hash, "raw_y")
+    plot(x_hash, "corrected")
+    plot(x_hash, "cumulative_corrected")
+    plot(x_hash, "F")
+    plot(x_hash, "CR")
     plot(x_hash, "CS")
     plot(x_hash, "ED")
