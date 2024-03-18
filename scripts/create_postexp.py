@@ -14,13 +14,13 @@ def post_exp(df, index_a, index_b, problem_id, run, output_file):
     result_a = None
     result_b = None
     if index_a != None:
-        df[f"x{index_a}"] = df[f"x{index_a}"].apply(min_distance)
+        # df[f"x{index_a}"] = df[f"x{index_a}"].apply(min_distance)
         groups_a = df.groupby((df.index // group_size) + 1)[f"x{index_a}"]
         result_a = groups_a.agg(['max', 'min', 'mean', 'median']).values
         length = min(result_a.shape[0], 200)
         output_file[0][problem_id][run-1][:length, :] = result_a[:length, :]
     if index_b != None:
-        df[f"x{index_b}"] = df[f"x{index_b}"].apply(min_distance)
+        # df[f"x{index_b}"] = df[f"x{index_b}"].apply(min_distance)
         groups_b = df.groupby((df.index // group_size) + 1)[f"x{index_b}"]
         result_b = groups_b.agg(['max', 'min', 'mean', 'median']).values
         length = min(result_b.shape[0], 200)
@@ -35,6 +35,7 @@ if __name__ == "__main__":
     bounds = int(sys.argv[1])
     output_file = np.zeros((2, 50, 25, 200, 4))
     xopts = np.loadtxt("data/xopts_20.txt")
+    selected_x = []
     for problem_id in range(50):
         print(f"Processing problem {problem_id}.")
         xopt_index = (bounds) * 50 + problem_id
@@ -55,12 +56,17 @@ if __name__ == "__main__":
             if xopt[index] > -4.99 and xopt[index] < 4.99:
                 index_b = index
                 break
+        selected_x += [[-1 if index_a == None else index_a, 
+                        -1 if index_a == None else xopt[index_a],
+                        -1 if index_b == None else index_b, 
+                        -1 if index_b == None else xopt[index_b]]]
         for run in (range(1, 26)):
             df = pd.read_csv(
                 f"data/atom_runs/{problem_id}_{xopt_index}_runs_{run}.csv")
             output_file = post_exp(df, index_a, index_b,
                                    problem_id, run, output_file)
     np.save(f"data/post_exp/{bounds}.npy", output_file)
+    np.savetxt(f"data/post_exp/{bounds}.txt", np.array(selected_x))
     # table_name = "best_y"
     # conn = sqlite3.connect("data/atom_data.db")
     # cursor = conn.cursor()
