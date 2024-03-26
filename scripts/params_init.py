@@ -2,11 +2,11 @@ import os
 import numpy as np
 
 
-def generate_weight(ndim, seed):
+def generate_weight(seed):
     # set random seed
     np.random.seed(seed)
     # get the number of non-zero weight value
-    num_nonzero = np.random.randint(2, 5) if ndim > 5 else ndim
+    num_nonzero = np.random.randint(2, 5)
     # generate weight in lenght of num_nonzero
     weight = np.random.uniform(size=num_nonzero)
     # expand weight to full length of 24
@@ -49,7 +49,7 @@ if __name__ == "__main__":
                       for i in range(ndim+1) for j in range(nprob)])
     np.savetxt(f"data/xopts_{ndim}.txt", np.array(xopts))
     # generate 50 sets of weights
-    weights = np.array([generate_weight(ndim, seeds[i]) for i in range(nprob)])
+    weights = np.array([generate_weight(seeds[i]) for i in range(nprob)])
     np.savetxt(f"data/weights_{ndim}.txt", weights)
     # generate instance number
     iids = np.random.randint(100, size=(nprob, 24))
