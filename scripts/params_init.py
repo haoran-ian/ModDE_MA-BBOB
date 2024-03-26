@@ -2,11 +2,11 @@ import os
 import numpy as np
 
 
-def generate_weight(seed):
+def generate_weight(ndim, seed):
     # set random seed
     np.random.seed(seed)
     # get the number of non-zero weight value
-    num_nonzero = np.random.randint(2, 5)
+    num_nonzero = np.random.randint(2, 5) if ndim > 5 else ndim
     # generate weight in lenght of num_nonzero
     weight = np.random.uniform(size=num_nonzero)
     # expand weight to full length of 24
@@ -38,8 +38,8 @@ if __name__ == "__main__":
     if not os.path.exists("data"):
         os.makedirs("data")
     # problems are 20-dimensional, 50 set of problems' weights
-    ndim = 20
-    nprob = 50
+    ndim = 2
+    nprob = 500
     # set random seed
     np.random.seed(0)
     # generate seeds for each problem
@@ -47,10 +47,10 @@ if __name__ == "__main__":
     # generate optima with near boundraies values
     xopts = np.array([generate_xopt(i, ndim, seeds[j * ndim + i])
                       for i in range(ndim+1) for j in range(nprob)])
-    np.savetxt("data/xopts_{}.txt".format(ndim), np.array(xopts))
+    np.savetxt(f"data/xopts_{ndim}.txt", np.array(xopts))
     # generate 50 sets of weights
-    weights = np.array([generate_weight(seeds[i]) for i in range(nprob)])
-    np.savetxt("data/weights.txt", weights)
+    weights = np.array([generate_weight(ndim, seeds[i]) for i in range(nprob)])
+    np.savetxt(f"data/weights_{ndim}.txt", weights)
     # generate instance number
     iids = np.random.randint(100, size=(nprob, 24))
-    np.savetxt("data/iids.txt", iids)
+    np.savetxt(f"data/iids_{ndim}.txt", iids)
