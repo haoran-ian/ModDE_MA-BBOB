@@ -55,7 +55,7 @@ def create_scatter_avg_iid(fs, points):
         plt.axhline(-5, c='k', ls=':')
         plt.axvline(5, c='k', ls=':')
         plt.axvline(-5, c='k', ls=':')
-        plt.savefig(f"results/avg/{names[i]}.png")
+        plt.savefig(f"results/avg/restriction_{names[i]}.png")
         plt.cla()
 
 
@@ -66,7 +66,6 @@ if __name__ == "__main__":
     if not os.path.exists(exp_data):
         n_samples = 20000
         problems = load_problems()
-        print(len(problems))
         num_instance = int(len(problems)/9)
         points = np.random.uniform(size=(n_samples, 2), low=-5, high=5)
         np.save("data/avg_iid_points.npy", points)
