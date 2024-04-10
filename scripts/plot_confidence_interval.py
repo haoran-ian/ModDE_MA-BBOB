@@ -25,6 +25,9 @@ def hash_y(x_hash, variable, boundaries):
         f"select evals, problem_id, {variable} from {variable} where \
             boundaries='{boundaries}';", conn)
     df["evals"] = df.evals.map(lambda x: x_hash[x])
+    df = df[df["evals"] > 365]
+    if variable == "CS":
+        df[variable] = df[variable].replace(0., 1.)
     df_mean = df.groupby(["evals", "problem_id"])[
         variable].mean().reset_index()
     if variable == "raw_y":
@@ -109,7 +112,8 @@ def plot(x_hash, variable):
                 plt.title(
                     f"Change of CR where optima are close to the bound in {i} dimension")
         elif variable == "CS":
-            plt.ylim(-0.04, 0.9)
+            # plt.ylim(-0.04, 0.9)
+            plt.ylim(-0.04, 1.1)
             plt.legend(loc="upper left")
             if i > 1:
                 plt.title(
@@ -136,10 +140,10 @@ if __name__ == "__main__":
     x = list(set(int(10**(i/unit)) for i in range(5*unit+1)))
     x.sort()
     x_hash = hash_bin(x)
-    plot(x_hash, "raw_y")
-    plot(x_hash, "corrected")
-    plot(x_hash, "cumulative_corrected")
+    # plot(x_hash, "raw_y")
+    # plot(x_hash, "corrected")
+    # plot(x_hash, "cumulative_corrected")
     plot(x_hash, "F")
     plot(x_hash, "CR")
-    plot(x_hash, "CS")
+    # plot(x_hash, "CS")
     plot(x_hash, "ED")
