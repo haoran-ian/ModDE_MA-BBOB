@@ -10,3 +10,4 @@ data_*/
 test.py
 *.db
 *.npy
+.DS_Store

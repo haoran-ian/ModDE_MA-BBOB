@@ -80,8 +80,8 @@ if __name__ == "__main__":
                             \"toroidal\", \"mirror\", \"hvb\", \"expc_target\",\
                             \"expc_center\", \"exps\".', required=True)
     args = vars(parser.parse_args())
-    number_of_dims_near_boundaries = int(args['near_bounds'])
-    boundary_correction = args['bound_corr']
+    k_components = int(args['k_components'])
+    bound_corr = args['bound_corr']
 
     # define the problems' dimensions, number of sets of weights and iids,
     # budget, and runs for algorithm
@@ -94,8 +94,37 @@ if __name__ == "__main__":
     runs = 10
     # generate problems
     problems = [
-        ioh.get_problems()
+        ioh.get_problem(1, 1, ndim, ioh.ProblemClass.BBOB),
+        ioh.get_problem(16, 1, ndim, ioh.ProblemClass.BBOB),
+        ioh.get_problem(23, 1, ndim, ioh.ProblemClass.BBOB)
     ]
+    # generate search region
+    epsilons = [0.01, 0.02, 0.04, 0.06, 0.08, 0.1]
+    for prob in problems:
+        xopt = prob.optimum.x
+        lb = [-5. for _ in range(ndim)]
+        ub = [5. for _ in range(ndim)]
+        abs_diff_with_neg5 = np.abs(xopt - lb)
+        abs_diff_with_5 = np.abs(xopt - ub)
+        min_abs_diff = np.minimum(abs_diff_with_neg5, abs_diff_with_5)
+        sorted_indices = np.argsort(min_abs_diff)
+        sorted_values = min_abs_diff[sorted_indices]
+        sorted_xopt = xopt[sorted_indices]
+        components = sorted_indices[:k_components]
+        for epsilon in epsilons:
+            search_region = np.array([[lb[i], ub[i]] for i in range(ndim)])
+            for j in components:
+                if np.abs(xopt[j] - lb[j]) <= np.abs(xopt[j] - ub[j]):
+                    search_region[j][0] = xopt[j] - \
+                        (ub[j] - xopt[j]) * epsilon / (1 - epsilon)
+                    search_region[j][1] = ub[j]
+                else:
+                    search_region[j][0] = lb[j]
+                    search_region[j][1] = xopt[j] + \
+                        (xopt[j] - lb[j]) * epsilon / (1 - epsilon)
+            problem_id = prob.meta_data.problem_id
+            np.savetxt(f"data/search_region/{problem_id}_{1}_{epsilon}.txt",
+                       search_region)
     # # experiment
     # obj = LSHADE_interface('saturate', r_N_init, r_arc, p, H, budget)
 
