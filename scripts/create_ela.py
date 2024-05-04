@@ -1,7 +1,10 @@
+import os
 import ioh
+import time
 import numpy as np
 import pandas as pd
 
+from pflacco.sampling import create_initial_sample
 from pflacco.classical_ela_features import calculate_dispersion
 from pflacco.classical_ela_features import calculate_ela_distribution
 from pflacco.classical_ela_features import calculate_ela_level
@@ -27,7 +30,7 @@ def load_problems():
     return problems
 
 
-def save_calculate_features(X, y, table_name, target, problem_id, written):
+def calculate_features(X, y, target):
     keys = []
     values = []
     if target == "disp":
@@ -67,76 +70,39 @@ def save_calculate_features(X, y, table_name, target, problem_id, written):
 
 
 if __name__ == "__main__":
+    if not os.path.exists("data/samplingX.npy"):
+        samplingX = []
+        for _ in range(100):
+            X = create_initial_sample(20, lower_bound=-5, upper_bound=5)
+            samplingX += X.values.tolist()
+        samplingX = np.array(samplingX)
+        np.save("data/samplingX.npy", samplingX)
+    X = np.load("data/samplingX.npy")
+    X = pd.DataFrame(X)
     problems = load_problems()
-    print(problems)
-
-
-# if __name__ == "__main__":
-#     # meta data
-#     num_sampling = 100
-#     num_x = 1000
-#     dim = 10
-#     # parse args
-#     parser = argparse.ArgumentParser()
-#     parser.add_argument("-d", help="description of the experiment")
-#     parser.add_argument("-p", help="path for original experiment data")
-#     parser.add_argument("-f", help="feature set's name")
-#     parser.add_argument("-i", type=int, help="ID of the problem")
-#     args = parser.parse_args()
-#     if args.d == None or args.f == None or args.i == None:
-#         parser.print_help()
-#         exit()
-#     table_name = args.d
-#     problem_id = args.i
-#     data_path = args.p
-#     target = args.f
-#     # collect basic data for table
-#     # problem_ids = []
-#     experiment_ids = []
-#     subtract_lims = []
-#     rotate_lims = []
-#     scale_factors = []
-#     is_subtracts = []
-#     is_rotates = []
-#     is_scales = []
-#     file_list = []
-#     file_list_tmp = os.listdir(data_path)
-#     for file_name in file_list_tmp:
-#         match_obj = re.match(
-#             r"(\d+)_(\d+)_(\d+\.\d+)_(\d+\.\d+)_(\d+\.\d+)_(\d+)_(\d+)_(\d+)\.txt",
-#             file_name)
-#         if int(match_obj.group(1)) != problem_id:
-#             continue
-#         experiment_ids += [int(match_obj.group(2))]
-#         subtract_lims += [float(match_obj.group(3))]
-#         rotate_lims += [float(match_obj.group(4))]
-#         scale_factors += [float(match_obj.group(5))]
-#         is_subtracts += [float(match_obj.group(6))]
-#         is_rotates += [float(match_obj.group(7))]
-#         is_scales += [float(match_obj.group(8))]
-#         file_list += [file_name]
-#     # read experiments results
-#     X = np.array(read_x(num_sampling, num_x))
-#     Y = []
-#     for file_name in file_list:
-#         file_path = data_path + file_name
-#         y = read_y(file_path, num_sampling, num_x)
-#         Y += [y]
-#         print("Read file:", file_path)
-#     Y = np.array(Y)
-#     # create table
-#     written = False
-#     for file_ind in range(Y.shape[0]):
-#         for i in range(num_sampling):
-#             prefix = [problem_id, experiment_ids[file_ind],
-#                       subtract_lims[file_ind], rotate_lims[file_ind],
-#                       scale_factors[file_ind], is_subtracts[file_ind],
-#                       is_rotates[file_ind], is_scales[file_ind]]
-#             save_calculate_features(X[i], Y[file_ind][i], prefix, table_name,
-#                                     target, problem_id, written)
-#             if not written:
-#                 written = True
-#     os.rename("tmp-"+table_name+"-"+str(problem_id)+"-"+target+".csv",
-#               table_name+"-"+str(problem_id)+"-"+target+".csv")
-#     shutil.move(table_name+"-"+str(problem_id)+"-"+target+".csv",
-#                 table_name+"/"+table_name+"-"+str(problem_id)+"-"+target+".csv")
+    dataset_keys = []
+    dataset_values = []
+    for bounds in range(1, 21):
+        for pid in range(50):
+            start_time = time.time()
+            prob = problems[bounds*50+pid]
+            y = X.apply(lambda x: prob(x), axis=1)
+            y_norm = (y - y.min()) / (y.max() - y.min())
+            for sampling in range(100):
+                set_keys = ["pid", "iteration"]
+                set_values = [pid, sampling]
+                for feature in ["disp", "ela_distr", "ela_level", "ela_meta",
+                                "ic", "nbc", "pca"]:
+                    keys, values = calculate_features(
+                        X[1000*sampling:1000*sampling+1000],
+                        y[1000*sampling:1000*sampling+1000], feature)
+                    set_keys += keys
+                    set_values += values
+                if dataset_keys == []:
+                    dataset_keys = set_keys
+                dataset_values += [set_values]
+            end_time = time.time()
+            print(
+                f"Processing problem {pid} (boundaries {bounds}) in {end_time-start_time}s")
+        df = pd.DataFrame(dataset_values, columns=dataset_keys)
+        df.to_csv(f"data/ELA_{bounds}.csv", index=False)
