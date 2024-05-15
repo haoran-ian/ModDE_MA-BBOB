@@ -4,11 +4,11 @@ ModDE/
 check.ipynb
 logger/
 logger-zip/
-L-SHADE_mirror/
+# L-SHADE_mirror/
 nohup.out
-atom_runs/
+# atom_runs/
 data_*/
 test.py
-*.db
-*.npy
+# *.db
+# *.npy
 .DS_Store

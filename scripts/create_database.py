@@ -5,21 +5,23 @@ import pandas as pd
 
 
 def array_to_dataframe(array, variable):
-    keys = ["evals", "problem_id", "instance", "k_component", "epsilon", variable]
+    keys = ["evals", "problem_id", "instance",
+            "k_component", "epsilon", variable]
     values = []
     problem_ids = [1, 16, 23]
-    epsilons = [0.01, 0.02, 0.04, 0.06, 0.08, 0.1]
+    epsilons = [0.01, 0.02, 0.04, 0.06, 0.08, 0.1, 0.5, ""]
     for j in range(20006):
         for m in range(3):
-            for n in range(6):
-                k = m*6+n
-                values += [[j, problem_ids[m], 1, 20, epsilons[n], array[0][j][k]]]
+            for n in range(8):
+                k = m*8+n
+                values += [[j, problem_ids[m], 1,
+                            20, epsilons[n], array[0][j][k]]]
     df = pd.DataFrame(values, columns=keys)
     return df
 
 
 def read_atom_array(table_name):
-    result = np.zeros((1, 20006, 18))
+    result = np.zeros((1, 20006, 24))
     tables = ["raw_y", "corrected", "cumulative_corrected",
               "F", "CR", "CS", "ED"]
     index = tables.index(table_name)
@@ -36,20 +38,16 @@ def read_atom_array(table_name):
 
 
 if __name__ == "__main__":
-    # table_name = "raw_y"
-    # table_name = "corrected"
-    # table_name = "cumulative_corrected"
-    # table_name = "F"
-    # table_name = "CR"
-    # table_name = "CS"
-    table_name = "ED"
+    table_names = ["raw_y", "corrected", "cumulative_corrected",
+                   "F", "CR", "CS", "ED"]
     conn = sqlite3.connect("data/L-SHADE_mirror/atom_data.db")
     cursor = conn.cursor()
-    cursor.execute(f"select name from sqlite_master where type='table' and \
-        name='{table_name}'")
-    if cursor.fetchone():
-        cursor.execute(f"drop table {table_name}")
-    table_values = read_atom_array(table_name)
-    df = array_to_dataframe(table_values, table_name)
-    df.to_sql(table_name, conn, index=False)
-    print(table_name)
+    for table_name in table_names:
+        cursor.execute(f"select name from sqlite_master where type='table' and \
+            name='{table_name}'")
+        if cursor.fetchone():
+            cursor.execute(f"drop table {table_name}")
+        table_values = read_atom_array(table_name)
+        df = array_to_dataframe(table_values, table_name)
+        df.to_sql(table_name, conn, index=False)
+        print(table_name)

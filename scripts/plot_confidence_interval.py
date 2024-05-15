@@ -52,22 +52,25 @@ def plot(x_hash, variable):
     }
     if not os.path.exists(f"results/{title_dict[variable]}/"):
         os.mkdir(f"results/{title_dict[variable]}/")
-    epsilons = [0.01, 0.02, 0.04, 0.06, 0.08, 0.1]
-    linestyles = ["solid", (0, (5, 1)),  # densely dashed
+    epsilons = [0.01, 0.02, 0.04, 0.06, 0.08, 0.1, 0.5, ""]
+    linestyles = ["dashed", "dashed", "solid", (0, (5, 1)),  # densely dashed
                   (0, (3, 1, 1, 1)),  # densely dashdotted
                   "dashed", "dashdot", "dotted",]
-    colors = ["#440154", "#414487", "#2a788e", "#22a884", "#7ad151", "#fde725"]
+    colors = ["#440154", "#414487", "#2a788e",
+              "#22a884", "#7ad151", "#fde725", "red", "blue"]
     df_mean = hash_y(x_hash, variable, 20)
+    # print(df_mean)
     for problem_id in [1, 16, 23]:
         plt.figure(figsize=(10, 6))
         df_temp = df_mean[(df_mean["problem_id"] == problem_id)]
+        # print(df_temp)
         y_mean = df_temp.values
         peak_x = y_mean[np.argmax(y_mean[:, 3])][0]
         peak_y = np.max(y_mean[:, 3])
         for i in range(len(epsilons)):
             epsilon = epsilons[i]
             df_temp = df_mean[(df_mean["problem_id"] == problem_id) & (
-                df_mean["epsilon"] == epsilon)]
+                df_mean["epsilon"] == str(epsilon))]
             sns.lineplot(data=df_temp, x="evals", y=variable,
                          linestyle=linestyles[-i-1], color=colors[i],
                          label=f"problem: {problem_id}, epsilon: {epsilon}")

@@ -15,7 +15,8 @@ def dataframe_to_csv(table_value, problem_id, iid, k_component, epsilon, runs):
 
 def split_dat(problem_id, iid, k_component, epsilon):
     folder_path = f"data/L-SHADE_mirror/L-SHADE_mirror_{problem_id}_{epsilon}/"
-    child_folder_path = os.listdir(folder_path)[0]
+    child_folder_path = os.listdir(folder_path)[1]
+    print(child_folder_path)
     file_path = os.listdir(folder_path + child_folder_path)[0]
     file_path = folder_path + child_folder_path + "/" + file_path
     f = open(file_path, 'r')
@@ -42,5 +43,5 @@ if __name__ == "__main__":
         os.mkdir("data/L-SHADE_mirror/atom_runs")
 
     for problem_id in [1, 16, 23]:
-        for epsilon in [0.01, 0.02, 0.04, 0.06, 0.08, 0.1]:
+        for epsilon in [0.01, 0.02, 0.04, 0.06, 0.08, 0.1, 0.5, ""]:
             split_dat(problem_id, 1, 20, epsilon)

@@ -98,6 +98,7 @@ if __name__ == "__main__":
                 problem_id in problem_ids]
     # generate search region
     epsilons = [0.01, 0.02, 0.04, 0.06, 0.08, 0.1]
+    # epsilons = [0.5]
     for prob in problems:
         xopt = prob.optimum.x
         lb = [-5. for _ in range(ndim)]
@@ -155,3 +156,30 @@ if __name__ == "__main__":
             for _ in range(runs):
                 obj(problem)
                 problem.reset()
+
+    # # experiment
+    # for problem_id in problem_ids:
+    #     obj = LSHADE_interface(bound_corr, r_N_init, r_arc, p, H, budget)
+    #     info = f"problem id: {problem_id}, k components: {k_components}, \
+    #         bound_corr: {bound_corr}"
+    #     print(info)
+    #     problem = ioh.get_problem(problem_id, 1, ndim, ioh.ProblemClass.BBOB)
+    #     logger_params = dict(
+    #         triggers=[ioh.logger.trigger.ALWAYS,
+    #                     ioh.logger.trigger.ON_VIOLATION],
+    #         additional_properties=[],
+    #         root="data/L-SHADE_mirror/",
+    #         folder_name=f"L-SHADE_mirror_{problem_id}_",
+    #         algorithm_name=f"L-SHADE_mirror_{problem_id}_",
+    #         algorithm_info=info,
+    #         store_positions=True,
+    #     )
+    #     logger = ioh.logger.Analyzer(**logger_params)
+    #     # logger.set_experiment_attributes({'SDIS': 'Saturate'})
+    #     logger.watch(obj, ['corrected', 'cumulative_corrected',
+    #                         'F', 'CR', 'CS', 'ED'])
+    #     logger.reset()
+    #     problem.attach_logger(logger)
+    #     for _ in range(runs):
+    #         obj(problem)
+    #         problem.reset()

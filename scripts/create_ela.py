@@ -53,11 +53,6 @@ def calculate_features(X, y, target):
         ic = calculate_information_content(X, y)
         keys += list(ic.keys())[:-1]
         values += list(ic.values())[:-1]
-    elif target == "limo":
-        limo = calculate_limo(X, y, lower_bound=[-5. for _ in range(20)],
-                              upper_bound=[5. for _ in range(20)])
-        keys += ["limo.avg_length_norm", "limo.length_mean", "limo.ratio_mean"]
-        values += [limo[keys[-3]], limo[keys[-2]], limo[keys[-1]]]
     elif target == "nbc":
         nbc = calculate_nbc(X, y)
         keys += list(nbc.keys())[:-1]
