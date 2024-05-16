@@ -22,6 +22,7 @@ if __name__ == "__main__":
             labels = [str(epsilon) for epsilon in epsilons]
             axs[i].barh(labels, lengths, left=starts)
             axs[i].set_title(f"dimension {i+1}")
+        fig.suptitle(f"Search Region of Problem {problem_id}")
         plt.tight_layout()
         plt.savefig(f"results/region/{problem_id}.png")
         plt.cla()
