@@ -108,7 +108,7 @@ def plot(x_hash, variable):
         plt.title(f"{title_dict[variable]} when k_components is 20")
         plt.tight_layout()
         plt.savefig(f"results/{title_dict[variable]}/{problem_id}_20.png")
-        plt.cla()
+        plt.close()
 
 
 if __name__ == "__main__":
@@ -119,6 +119,7 @@ if __name__ == "__main__":
                  for i in range(int(np.log10(budget)*unit)+1))) + [budget]
     x.sort()
     x_hash = hash_bin(x)
+    # plt.style.use("seaborn-v0_8-darkgrid")
     plot(x_hash, "raw_y")
     plot(x_hash, "corrected")
     plot(x_hash, "cumulative_corrected")
